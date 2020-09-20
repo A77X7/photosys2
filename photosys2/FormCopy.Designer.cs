@@ -36,6 +36,8 @@
             this.chkRename = new System.Windows.Forms.CheckBox();
             this.btnOk = new System.Windows.Forms.Button();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.cbxFileExistsAction = new System.Windows.Forms.ComboBox();
             this.flowLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
@@ -121,16 +123,38 @@
             this.flowLayoutPanel2.Controls.Add(this.btnOk);
             this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.flowLayoutPanel2.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.flowLayoutPanel2.Location = new System.Drawing.Point(0, 76);
+            this.flowLayoutPanel2.Location = new System.Drawing.Point(0, 110);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
             this.flowLayoutPanel2.Size = new System.Drawing.Size(343, 29);
             this.flowLayoutPanel2.TabIndex = 6;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label1.Location = new System.Drawing.Point(0, 56);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(230, 13);
+            this.label1.TabIndex = 7;
+            this.label1.Text = "Действие, если конечный файл существует";
+            // 
+            // cbxFileExistsAction
+            // 
+            this.cbxFileExistsAction.Dock = System.Windows.Forms.DockStyle.Top;
+            this.cbxFileExistsAction.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbxFileExistsAction.FormattingEnabled = true;
+            this.cbxFileExistsAction.Location = new System.Drawing.Point(0, 69);
+            this.cbxFileExistsAction.Name = "cbxFileExistsAction";
+            this.cbxFileExistsAction.Size = new System.Drawing.Size(343, 21);
+            this.cbxFileExistsAction.TabIndex = 8;
             // 
             // FormCopy
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(343, 105);
+            this.ClientSize = new System.Drawing.Size(343, 139);
+            this.Controls.Add(this.cbxFileExistsAction);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.flowLayoutPanel2);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.tbxPath);
@@ -138,6 +162,7 @@
             this.Name = "FormCopy";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Copy/Move/Rename";
+            this.Load += new System.EventHandler(this.FormCopy_Load);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
             this.flowLayoutPanel2.ResumeLayout(false);
@@ -157,5 +182,7 @@
         public System.Windows.Forms.RadioButton rbnCopy;
         public System.Windows.Forms.RadioButton rbnMove;
         public System.Windows.Forms.CheckBox chkRename;
+        private System.Windows.Forms.Label label1;
+        public System.Windows.Forms.ComboBox cbxFileExistsAction;
     }
 }

@@ -38,5 +38,10 @@ namespace photosys2
             if (e.CloseReason != CloseReason.None)
                 e.Cancel = true;
         }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            result = Form1.FileExistsActions.SkipSameOrSaveBoth;
+        }
     }
 }

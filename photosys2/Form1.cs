@@ -384,7 +384,7 @@ namespace photosys2
 
         public enum FileExistsActions
         {
-            Ask, Replace, Skip, SaveBoth
+            Ask, Replace, Skip, SaveBoth, SkipSameOrSaveBoth
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -404,6 +404,7 @@ namespace photosys2
                         MessageBox.Show("Путь не должен быть пустым.\nНельзя копировать (перемещать) в ту же папку.\nВ одной и той же папке можно только переименовать .");
                         return;
                     }
+                    fileExistsAction = (FileExistsActions)frm.cbxFileExistsAction.SelectedItem;
                     IEnumerable<System.Windows.Forms.ListViewItem> items = null;
                     int total = 0;
                     if (lvwFiles.SelectedItems.Count > 0)
@@ -434,11 +435,28 @@ namespace photosys2
                             }
                             if (File.Exists(Path.Combine(dst, fn + ext)))
                             {
+                                var fiSrc = new FileInfo(item.Tag as string);
+                                var fiDst = new FileInfo(Path.Combine(dst, fn + ext));
+                                var dtSrc = (DateTime)item.SubItems[2].Tag;
+                                var dtSrcSrc = item.SubItems[3].Text;
+                                DateTime? dtDst;
+                                string dtSrcDst;
+                                getExifDate(fiDst.FullName, out dtDst, out dtSrcDst);
+
                                 var fea = fileExistsAction;
                                 if (fea == FileExistsActions.Ask)
                                 {
                                     var frmExists = new FormFileExistsAction();
-                                    frmExists.lblFile.Text = Path.Combine(dst, fn + ext);
+                                    frmExists.lblFile.Text =
+$@"src: {fiSrc.FullName}
+dst: {fiDst.FullName}
+
+src: {fiSrc.Length:N0} bytes
+dst: {fiDst.Length:N0} bytes
+
+src: {dtSrc} {dtSrcSrc}
+dst: {dtDst} {dtSrcDst}";
+
                                     if (frmExists.ShowDialog() == DialogResult.OK)
                                     {
                                         fea = frmExists.result;
@@ -482,6 +500,32 @@ namespace photosys2
                                 {
                                     log.Add("SKIP: " + Path.Combine(dst, fn + ext));
                                     continue;
+                                }
+                                else if (fea == FileExistsActions.SkipSameOrSaveBoth)
+                                {
+                                    if (fiSrc.Length == fiDst.Length)
+                                    {
+                                        if (dtDst.HasValue && dtSrc == dtDst.Value && dtSrcSrc == dtSrcDst)
+                                        {
+                                            log.Add("SKIP DUE EQUALS: " + fiDst.FullName);
+                                            continue;
+                                        }
+                                    }
+
+                                    int n = 0;
+                                    while (File.Exists(Path.Combine(dst, $"{fn} ({++n}){ext}")))
+                                    {
+                                        if (n == int.MaxValue)
+                                        {
+                                            log.Add("CAN'T SAVE BOTH: " + Path.Combine(dst, fn + ext));
+                                            n = 0;
+                                            break;
+                                        }
+                                    }
+                                    if (n > 0)
+                                    {
+                                        fn = $"{fn} ({n})";
+                                    }
                                 }
                             }
                             if (frm.rbnMove.Checked || (pathsIsEqual && frm.chkRename.Checked))

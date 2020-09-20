@@ -28,5 +28,15 @@ namespace photosys2
                 tbxPath.Text = dlg.SelectedPath;
             }
         }
+
+        private void FormCopy_Load(object sender, EventArgs e)
+        {
+            cbxFileExistsAction.Items.Add(Form1.FileExistsActions.Ask);
+            cbxFileExistsAction.Items.Add(Form1.FileExistsActions.Replace);
+            cbxFileExistsAction.Items.Add(Form1.FileExistsActions.SaveBoth);
+            cbxFileExistsAction.Items.Add(Form1.FileExistsActions.Skip);
+            cbxFileExistsAction.Items.Add(Form1.FileExistsActions.SkipSameOrSaveBoth);
+            cbxFileExistsAction.SelectedIndex = 0;
+        }
     }
 }
