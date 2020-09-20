@@ -384,7 +384,11 @@ namespace photosys2
 
         public enum FileExistsActions
         {
-            Ask, Replace, Skip, SaveBoth, SkipSameOrSaveBoth
+            [Description("Спросить")] Ask,
+            [Description("Заменить")] Replace,
+            [Description("Пропустить")] Skip,
+            [Description("Сохранить оба")] SaveBoth,
+            [Description("Пропустить одинаковые или сохранить оба, если разные")] SkipSameOrSaveBoth
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -448,7 +452,7 @@ namespace photosys2
                                 {
                                     var frmExists = new FormFileExistsAction();
                                     frmExists.lblFile.Text =
-$@"src: {fiSrc.FullName}
+    $@"src: {fiSrc.FullName}
 dst: {fiDst.FullName}
 
 src: {fiSrc.Length:N0} bytes
