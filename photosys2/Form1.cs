@@ -49,90 +49,100 @@ namespace photosys2
         void refreshFiles(string path)
         {
             splitContainer1.Enabled = false;
-            lvwFiles.Items.Clear();
-            pbxImage.Image = null;
-            if (System.IO.Directory.Exists(path))
+            try
             {
-                var dir = new DirectoryInfo(path);
-                path = dir.FullName;
-                var files = System.IO.Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
-                var trimStart = path.Length;
-                int c = 0;
-                double filesSize = 0;
-                lvwFiles.Items.AddRange(
-                    files.Select(file =>
-                    {
-                        var lvi = new System.Windows.Forms.ListViewItem();
-                        lvi.Text = file.Substring(trimStart + 1);
-                        lvi.Tag = file;
-                        DateTime? dt;
-                        string dtSrc;
-                        getExifDate(file, out dt, out dtSrc);
-                        var fdt = File.GetLastWriteTime(file);
-                        if (dt.HasValue)
+                lvwFiles.Items.Clear();
+                pbxImage.Image = null;
+                if (System.IO.Directory.Exists(path))
+                {
+                    var dir = new DirectoryInfo(path);
+                    path = dir.FullName;
+                    var files = System.IO.Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
+                    var trimStart = path.Length;
+                    int c = 0;
+                    double filesSize = 0;
+                    lvwFiles.Items.AddRange(
+                        files.Select(file =>
                         {
-                            TimeSpan ts;
-                            if (fdt > dt.Value)
+                            var lvi = new System.Windows.Forms.ListViewItem();
+                            lvi.Text = file.Substring(trimStart + 1);
+                            lvi.Tag = file;
+                            DateTime? dt;
+                            string dtSrc;
+                            getExifDate(file, out dt, out dtSrc);
+                            var fdt = File.GetLastWriteTime(file);
+                            if (dt.HasValue)
                             {
-                                ts = fdt - dt.Value;
-                            }
-                            else
-                            {
-                                ts = dt.Value - fdt;
-                            }
-                            if (ts > TimeSpan.FromSeconds(1))
-                            {
-                                lvi.UseItemStyleForSubItems = false;
-                                lvi.SubItems.Add(fdt.ToString("yyyy-MM-dd HH:mm:ss"), System.Drawing.Color.Red, lvi.BackColor, lvi.Font).Tag = fdt;
-                            }
-                            else if (ts > TimeSpan.Zero)
-                            {
-                                lvi.UseItemStyleForSubItems = false;
-                                lvi.SubItems.Add(fdt.ToString("yyyy-MM-dd HH:mm:ss"), System.Drawing.Color.Green, lvi.BackColor, lvi.Font).Tag = fdt;
+                                TimeSpan ts;
+                                if (fdt > dt.Value)
+                                {
+                                    ts = fdt - dt.Value;
+                                }
+                                else
+                                {
+                                    ts = dt.Value - fdt;
+                                }
+                                if (ts > TimeSpan.FromSeconds(1))
+                                {
+                                    lvi.UseItemStyleForSubItems = false;
+                                    lvi.SubItems.Add(fdt.ToString("yyyy-MM-dd HH:mm:ss"), System.Drawing.Color.Red, lvi.BackColor, lvi.Font).Tag = fdt;
+                                }
+                                else if (ts > TimeSpan.Zero)
+                                {
+                                    lvi.UseItemStyleForSubItems = false;
+                                    lvi.SubItems.Add(fdt.ToString("yyyy-MM-dd HH:mm:ss"), System.Drawing.Color.Green, lvi.BackColor, lvi.Font).Tag = fdt;
+                                }
+                                else
+                                {
+                                    lvi.SubItems.Add(fdt.ToString("yyyy-MM-dd HH:mm:ss")).Tag = fdt;
+                                }
                             }
                             else
                             {
                                 lvi.SubItems.Add(fdt.ToString("yyyy-MM-dd HH:mm:ss")).Tag = fdt;
                             }
-                        }
-                        else
-                        {
-                            lvi.SubItems.Add(fdt.ToString("yyyy-MM-dd HH:mm:ss")).Tag = fdt;
-                        }
-                        if (dt != null)
-                            lvi.SubItems.Add(dt.Value.ToString("yyyy-MM-dd HH:mm:ss")).Tag = dt;
-                        else
-                            lvi.SubItems.Add("");
-                        lvi.SubItems.Add(dtSrc);
-                        var fi = new FileInfo(file);
-                        filesSize += fi.Length / 1024.0;
-                        lvi.SubItems.Add($"{fi.Length / 1024.0:N2}").Tag = fi.Length;
-                        c++;
-                        toolStripStatusLabel1.Text = $"{c}/{files.Length} = {c * 100 / files.Length}%";
-                        Application.DoEvents();
-                        return lvi;
-                    }).ToArray()
-                );
-                var unit = "K";
-                if (filesSize > 1024)
-                {
-                    filesSize /= 1024;
-                    unit = "M";
+                            if (dt != null)
+                                lvi.SubItems.Add(dt.Value.ToString("yyyy-MM-dd HH:mm:ss")).Tag = dt;
+                            else
+                                lvi.SubItems.Add("");
+                            lvi.SubItems.Add(dtSrc);
+                            var fi = new FileInfo(file);
+                            filesSize += fi.Length / 1024.0;
+                            lvi.SubItems.Add($"{fi.Length / 1024.0:N2}").Tag = fi.Length;
+                            c++;
+                            toolStripStatusLabel1.Text = $"{c}/{files.Length} = {c * 100 / files.Length}%";
+                            Application.DoEvents();
+                            return lvi;
+                        }).ToArray()
+                    );
+                    var unit = "K";
+                    if (filesSize > 1024)
+                    {
+                        filesSize /= 1024;
+                        unit = "M";
+                    }
+                    if (filesSize > 1024)
+                    {
+                        filesSize /= 1024;
+                        unit = "G";
+                    }
+                    toolStripStatusLabel1.Text += $" = {filesSize:N2} {unit}B";
+                    lvwFiles.Columns[4].TextAlign = HorizontalAlignment.Right;
+                    lvwFiles.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
                 }
-                if (filesSize > 1024)
+                else
                 {
-                    filesSize /= 1024;
-                    unit = "G";
+                    MessageBox.Show("Directory not exists");
                 }
-                toolStripStatusLabel1.Text += $" = {filesSize:N2} {unit}B";
-                lvwFiles.Columns[4].TextAlign = HorizontalAlignment.Right;
-                lvwFiles.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
             }
-            else
+            catch (Exception err)
             {
-                MessageBox.Show("Directory not exists");
+                MessageBox.Show(err.Message);
             }
-            splitContainer1.Enabled = true;
+            finally
+            {
+                splitContainer1.Enabled = true;
+            }
         }
 
         [DllImport("shell32.dll", CharSet = CharSet.Auto)]
@@ -227,26 +237,7 @@ namespace photosys2
             {
                 pbxImage.Image = null;
                 (wpf.Child as MediaElement).Source = null;
-                double filesSize = 0;
-                foreach (System.Windows.Forms.ListViewItem i in lvwFiles.SelectedItems)
-                {
-                    filesSize += ((long)i.SubItems[4].Tag) / 1024.0;
-                }
-                var all = "";
-                if (lvwFiles.SelectedItems.Count == lvwFiles.Items.Count)
-                    all = "all";
-                var unit = "K";
-                if (filesSize > 1024)
-                {
-                    filesSize /= 1024;
-                    unit = "M";
-                }
-                if (filesSize > 1024)
-                {
-                    filesSize /= 1024;
-                    unit = "G";
-                }
-                toolStripStatusLabel1.Text = $"Selected {all} {lvwFiles.SelectedItems.Count} = {filesSize:N2} {unit}B";
+                toolStripStatusLabel1.Text = $"Selected {lvwFiles.SelectedItems.Count}/{lvwFiles.Items.Count}";
             }
         }
 
@@ -327,17 +318,17 @@ namespace photosys2
             }
         }
 
-        string getImageDate(System.Drawing.Image img)
-        {
-            var prop = img.PropertyItems.Where(x => x.Id == 0x9003).FirstOrDefault();
-            if (prop != null)
-            {
-                ASCIIEncoding encoding = new ASCIIEncoding();
-                var date = encoding.GetString(prop.Value);
-                return date;
-            }
-            return "";
-        }
+        //string getImageDate(System.Drawing.Image img)
+        //{
+        //    var prop = img.PropertyItems.Where(x => x.Id == 0x9003).FirstOrDefault();
+        //    if (prop != null)
+        //    {
+        //        ASCIIEncoding encoding = new ASCIIEncoding();
+        //        var date = encoding.GetString(prop.Value);
+        //        return date;
+        //    }
+        //    return "";
+        //}
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -348,9 +339,46 @@ namespace photosys2
 
         private void lvwFiles_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == (char)Keys.Enter && lvwFiles.SelectedItems.Count == 1)
+            if (e.KeyChar == (char)Keys.Enter)
             {
-                ShowFileProperties(lvwFiles.SelectedItems[0].Tag as string);
+                if (lvwFiles.SelectedItems.Count == 1)
+                    ShowFileProperties(lvwFiles.SelectedItems[0].Tag as string);
+                else
+                {
+                    splitContainer1.Enabled = false;
+                    try
+                    {
+                        double filesSize = 0;
+                        int c = 0;
+                        foreach (System.Windows.Forms.ListViewItem i in lvwFiles.SelectedItems)
+                        {
+                            filesSize += ((long)i.SubItems[4].Tag) / 1024.0;
+                            c++;
+                            toolStripStatusLabel1.Text = $"Processing {c}/{lvwFiles.SelectedItems.Count} = {c * 100 / lvwFiles.SelectedItems.Count}%";
+                            Application.DoEvents();
+                        }
+                        var unit = "K";
+                        if (filesSize > 1024)
+                        {
+                            filesSize /= 1024;
+                            unit = "M";
+                        }
+                        if (filesSize > 1024)
+                        {
+                            filesSize /= 1024;
+                            unit = "G";
+                        }
+                        toolStripStatusLabel1.Text = $"Selected {lvwFiles.SelectedItems.Count}/{lvwFiles.Items.Count} = {filesSize:N2} {unit}B";
+                    }
+                    catch (Exception err)
+                    {
+                        MessageBox.Show(err.Message);
+                    }
+                    finally
+                    {
+                        splitContainer1.Enabled = true;
+                    }
+                }
             }
         }
 
