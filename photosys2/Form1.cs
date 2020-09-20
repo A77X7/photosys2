@@ -354,15 +354,24 @@ namespace photosys2
             }
         }
 
+        public enum FileExistsActions
+        {
+            Ask, Replace, Skip, SaveBoth
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
+            FileExistsActions fileExistsAction = FileExistsActions.Ask;
+            var log = new List<string>();
+
             var frm = new FormCopy();
             if (frm.ShowDialog() == DialogResult.OK)
             {
                 splitContainer1.Enabled = false;
                 try
                 {
-                    if (string.IsNullOrWhiteSpace(frm.tbxPath.Text) || (new DirectoryInfo(frm.tbxPath.Text).FullName == new DirectoryInfo(this.tbxPath.Text).FullName && !frm.chkRename.Checked))
+                    var pathsIsEqual = new DirectoryInfo(frm.tbxPath.Text).FullName == new DirectoryInfo(this.tbxPath.Text).FullName;
+                    if (string.IsNullOrWhiteSpace(frm.tbxPath.Text) || (pathsIsEqual && !frm.chkRename.Checked))
                     {
                         MessageBox.Show("Путь не должен быть пустым.\nНельзя копировать (перемещать) в ту же папку.\nВ одной и той же папке можно только переименовать .");
                         return;
@@ -385,26 +394,91 @@ namespace photosys2
                         var desc = Path.GetDirectoryName(item.Text).Replace(Path.DirectorySeparatorChar.ToString(), " - ");
                         if (desc.Length > 0)
                             desc = " " + desc;
-                        var dst = Path.Combine(frm.tbxPath.Text, ((DateTime)item.SubItems[2].Tag).ToString("yyyy"), ((DateTime)item.SubItems[2].Tag).ToString("yyyy-MMdd") + desc, Path.GetFileName(item.Tag as string));
+                        var dst = Path.Combine(frm.tbxPath.Text, ((DateTime)item.SubItems[2].Tag).ToString("yyyy"), ((DateTime)item.SubItems[2].Tag).ToString("yyyy-MMdd") + desc);
                         try
                         {
-                            System.IO.Directory.CreateDirectory(Path.GetDirectoryName(dst));
-                            if (frm.rbnCopy.Checked)
+                            System.IO.Directory.CreateDirectory(dst);
+                            var fn = Path.GetFileNameWithoutExtension(item.Tag as string);
+                            var ext = Path.GetExtension(item.Tag as string);
+                            if (frm.chkRename.Checked)
                             {
-                                File.Copy(item.Tag as string, dst);
+                                fn = ((DateTime)item.SubItems[2].Tag).ToString("yyyy-MM-dd_HH-mm-ss") + " " + fn;
                             }
-                            else if (frm.rbnMove.Checked)
+                            if (File.Exists(Path.Combine(dst, fn + ext)))
                             {
-                                File.Move(item.Tag as string, dst);
+                                var fea = fileExistsAction;
+                                if (fea == FileExistsActions.Ask)
+                                {
+                                    var frmExists = new FormFileExistsAction();
+                                    frmExists.lblFile.Text = Path.Combine(dst, fn + ext);
+                                    if (frmExists.ShowDialog() == DialogResult.OK)
+                                    {
+                                        fea = frmExists.result;
+                                        if (frmExists.chkAlways.Checked)
+                                            fileExistsAction = fea;
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+                                if (fea == FileExistsActions.Replace)
+                                {
+                                    try
+                                    {
+                                        File.Delete(Path.Combine(dst, fn + ext));
+                                    }
+                                    catch
+                                    {
+                                        log.Add("CAN'T REPLACE: " + Path.Combine(dst, fn + ext));
+                                    }
+                                }
+                                else if (fea == FileExistsActions.SaveBoth)
+                                {
+                                    int n = 0;
+                                    while (File.Exists(Path.Combine(dst, $"{fn} ({++n}){ext}")))
+                                    {
+                                        if (n == int.MaxValue)
+                                        {
+                                            log.Add("CAN'T SAVE BOTH: " + Path.Combine(dst, fn + ext));
+                                            n = 0;
+                                            break;
+                                        }
+                                    }
+                                    if (n > 0)
+                                    {
+                                        fn = $"{fn} ({n})";
+                                    }
+                                }
+                                else if (fea == FileExistsActions.Skip)
+                                {
+                                    log.Add("SKIP: " + Path.Combine(dst, fn + ext));
+                                    continue;
+                                }
                             }
+                            if (frm.rbnMove.Checked || (pathsIsEqual && frm.chkRename.Checked))
+                            {
+                                File.Move(item.Tag as string, Path.Combine(dst, fn + ext));
+                            }
+                            else if (frm.rbnCopy.Checked)
+                            {
+                                File.Copy(item.Tag as string, Path.Combine(dst, fn + ext));
+                            }
+                            c++;
                         }
                         catch (Exception err)
                         {
                             MessageBox.Show(err.Message);
                         }
-                        c++;
                         toolStripStatusLabel1.Text = $"{c}/{total} = {c * 100 / total}%";
                         Application.DoEvents();
+                    }
+                    toolStripStatusLabel1.Text = $"{c}/{total} = {c * 100 / total}%";
+                    if (log.Count > 0)
+                    {
+                        var frmLog = new FormLog();
+                        frmLog.tbxLog.Text = string.Join("\r\n", log);
+                        frmLog.ShowDialog();
                     }
                 }
                 catch (Exception err)

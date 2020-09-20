@@ -97,7 +97,6 @@
             // chkRename
             // 
             this.chkRename.AutoSize = true;
-            this.chkRename.Enabled = false;
             this.chkRename.Location = new System.Drawing.Point(116, 3);
             this.chkRename.Name = "chkRename";
             this.chkRename.Size = new System.Drawing.Size(128, 17);

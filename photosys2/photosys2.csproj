@@ -68,6 +68,18 @@
     <Compile Include="FormCopy.Designer.cs">
       <DependentUpon>FormCopy.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormFileExistsAction.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormFileExistsAction.Designer.cs">
+      <DependentUpon>FormFileExistsAction.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormLog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormLog.Designer.cs">
+      <DependentUpon>FormLog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
@@ -75,6 +87,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormCopy.resx">
       <DependentUpon>FormCopy.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormFileExistsAction.resx">
+      <DependentUpon>FormFileExistsAction.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormLog.resx">
+      <DependentUpon>FormLog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
