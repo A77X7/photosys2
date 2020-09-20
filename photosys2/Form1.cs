@@ -52,6 +52,7 @@ namespace photosys2
             try
             {
                 lvwFiles.Items.Clear();
+                pbxImage.Image?.Dispose();
                 pbxImage.Image = null;
                 if (System.IO.Directory.Exists(path))
                 {
@@ -203,6 +204,7 @@ namespace photosys2
                 catch (Exception err)
                 {
                     toolStripStatusLabel1.Text = err.Message;
+                    pbxImage.Image?.Dispose(); 
                     pbxImage.Image = null;
 
                     try
@@ -211,6 +213,7 @@ namespace photosys2
                         me.Source = new Uri(lvwFiles.SelectedItems[0].Tag as string);
                         wpf.Visible = true;
                         pbxImage.Visible = false;
+                        pbxImage.Image?.Dispose();
                         pbxImage.Image = null;
                         toolStripStatusLabel1.Text = "";
                         //me.Play();
@@ -235,6 +238,7 @@ namespace photosys2
             }
             else
             {
+                pbxImage.Image?.Dispose();
                 pbxImage.Image = null;
                 (wpf.Child as MediaElement).Source = null;
                 toolStripStatusLabel1.Text = $"Selected {lvwFiles.SelectedItems.Count}/{lvwFiles.Items.Count}";
@@ -401,11 +405,10 @@ namespace photosys2
             {
                 splitContainer1.Enabled = false;
                 try
-                {
-                    var pathsIsEqual = new DirectoryInfo(frm.tbxPath.Text).FullName == new DirectoryInfo(this.tbxPath.Text).FullName;
-                    if (string.IsNullOrWhiteSpace(frm.tbxPath.Text) || (pathsIsEqual && !frm.chkRename.Checked))
+                {                    
+                    if (string.IsNullOrWhiteSpace(frm.tbxPath.Text))
                     {
-                        MessageBox.Show("Путь не должен быть пустым.\nНельзя копировать (перемещать) в ту же папку.\nВ одной и той же папке можно только переименовать .");
+                        MessageBox.Show("Путь не должен быть пустым.");
                         return;
                     }
                     fileExistsAction = (FileExistsActions)frm.cbxFileExistsAction.SelectedItem;
@@ -424,9 +427,13 @@ namespace photosys2
                     int c = 0;
                     foreach (var item in items)
                     {
-                        var desc = Path.GetDirectoryName(item.Text).Replace(Path.DirectorySeparatorChar.ToString(), " - ");
-                        if (desc.Length > 0)
-                            desc = " " + desc;
+                        var desc = "";
+                        if (frm.chkSaveSrcDirNames.Checked)
+                        {
+                            desc = Path.GetDirectoryName(item.Text).Replace(Path.DirectorySeparatorChar.ToString(), " - ");
+                            if (desc.Length > 0)
+                                desc = " " + desc;
+                        }
                         var dst = Path.Combine(frm.tbxPath.Text, ((DateTime)item.SubItems[2].Tag).ToString("yyyy"), ((DateTime)item.SubItems[2].Tag).ToString("yyyy-MMdd") + desc);
                         try
                         {
@@ -532,7 +539,7 @@ dst: {dtDst} {dtSrcDst}";
                                     }
                                 }
                             }
-                            if (frm.rbnMove.Checked || (pathsIsEqual && frm.chkRename.Checked))
+                            if (frm.rbnMove.Checked)
                             {
                                 File.Move(item.Tag as string, Path.Combine(dst, fn + ext));
                             }

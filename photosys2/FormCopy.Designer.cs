@@ -38,6 +38,7 @@
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
             this.cbxFileExistsAction = new System.Windows.Forms.ComboBox();
+            this.chkSaveSrcDirNames = new System.Windows.Forms.CheckBox();
             this.flowLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
@@ -59,7 +60,7 @@
             this.tbxPath.Dock = System.Windows.Forms.DockStyle.Top;
             this.tbxPath.Location = new System.Drawing.Point(0, 13);
             this.tbxPath.Name = "tbxPath";
-            this.tbxPath.Size = new System.Drawing.Size(343, 20);
+            this.tbxPath.Size = new System.Drawing.Size(459, 20);
             this.tbxPath.TabIndex = 1;
             // 
             // rbnCopy
@@ -90,10 +91,11 @@
             this.flowLayoutPanel1.Controls.Add(this.rbnCopy);
             this.flowLayoutPanel1.Controls.Add(this.rbnMove);
             this.flowLayoutPanel1.Controls.Add(this.chkRename);
+            this.flowLayoutPanel1.Controls.Add(this.chkSaveSrcDirNames);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 33);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(343, 23);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(459, 23);
             this.flowLayoutPanel1.TabIndex = 4;
             // 
             // chkRename
@@ -111,7 +113,7 @@
             this.btnOk.AutoSize = true;
             this.btnOk.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.btnOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOk.Location = new System.Drawing.Point(308, 3);
+            this.btnOk.Location = new System.Drawing.Point(424, 3);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(32, 23);
             this.btnOk.TabIndex = 5;
@@ -125,7 +127,7 @@
             this.flowLayoutPanel2.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
             this.flowLayoutPanel2.Location = new System.Drawing.Point(0, 110);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(343, 29);
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(459, 29);
             this.flowLayoutPanel2.TabIndex = 6;
             // 
             // label1
@@ -145,14 +147,24 @@
             this.cbxFileExistsAction.FormattingEnabled = true;
             this.cbxFileExistsAction.Location = new System.Drawing.Point(0, 69);
             this.cbxFileExistsAction.Name = "cbxFileExistsAction";
-            this.cbxFileExistsAction.Size = new System.Drawing.Size(343, 21);
+            this.cbxFileExistsAction.Size = new System.Drawing.Size(459, 21);
             this.cbxFileExistsAction.TabIndex = 8;
+            // 
+            // chkSaveSrcDirNames
+            // 
+            this.chkSaveSrcDirNames.AutoSize = true;
+            this.chkSaveSrcDirNames.Location = new System.Drawing.Point(250, 3);
+            this.chkSaveSrcDirNames.Name = "chkSaveSrcDirNames";
+            this.chkSaveSrcDirNames.Size = new System.Drawing.Size(163, 17);
+            this.chkSaveSrcDirNames.TabIndex = 6;
+            this.chkSaveSrcDirNames.Text = "Save source directory names";
+            this.chkSaveSrcDirNames.UseVisualStyleBackColor = true;
             // 
             // FormCopy
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(343, 139);
+            this.ClientSize = new System.Drawing.Size(459, 139);
             this.Controls.Add(this.cbxFileExistsAction);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.flowLayoutPanel2);
@@ -184,5 +196,6 @@
         public System.Windows.Forms.CheckBox chkRename;
         private System.Windows.Forms.Label label1;
         public System.Windows.Forms.ComboBox cbxFileExistsAction;
+        public System.Windows.Forms.CheckBox chkSaveSrcDirNames;
     }
 }
